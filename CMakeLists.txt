@@ -20,3 +20,7 @@ set(SOURCES
 add_executable(SudokuAssistant ${SOURCES} ${RESOURCES})
 
 target_link_libraries(SudokuAssistant PRIVATE Qt6::Widgets)
+
+enable_testing()
+
+add_subdirectory(tests)
