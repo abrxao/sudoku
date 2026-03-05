@@ -27,7 +27,6 @@ bool SudokuModel::loadFirstGridFromFile(const QString &filePath)
   QFile file(filePath);
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
   {
-    qWarning() << "Error trying to open file:" << filePath;
     return false;
   }
 
@@ -35,9 +34,14 @@ bool SudokuModel::loadFirstGridFromFile(const QString &filePath)
   QString firstLine = in.readLine();
 
   QString gridLine = in.readLine();
-  if (gridLine.length() < 81)
+
+  return loadFromString(gridLine);
+}
+
+bool SudokuModel::loadFromString(const QString &gridData)
+{
+  if (gridData.length() != 81)
   {
-    qWarning() << "Invalid Grid. Size:" << gridLine.length();
     return false;
   }
 
@@ -46,10 +50,43 @@ bool SudokuModel::loadFirstGridFromFile(const QString &filePath)
   {
     for (int col = 0; col < 9; ++col)
     {
-      m_grid[row][col] = gridLine[index].digitValue();
-      index++;
+      QChar c = gridData[index++];
+      if (!c.isDigit())
+      {
+        clearGrid();
+        return false;
+      }
+      m_grid[row][col] = c.digitValue();
+    }
+  }
+  return true;
+}
+
+QSet<int> SudokuModel::getPossibilities(int row, int col) const
+{
+  if (m_grid[row][col] != 0)
+  {
+    return QSet<int>();
+  }
+
+  QSet<int> possibilities = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+
+  for (int i = 0; i < 9; ++i)
+  {
+    possibilities.remove(m_grid[row][i]);
+    possibilities.remove(m_grid[i][col]);
+  }
+
+  int startRow = (row / 3) * 3;
+  int startCol = (col / 3) * 3;
+
+  for (int i = 0; i < 3; ++i)
+  {
+    for (int j = 0; j < 3; ++j)
+    {
+      possibilities.remove(m_grid[startRow + i][startCol + j]);
     }
   }
 
-  return true;
+  return possibilities;
 }
