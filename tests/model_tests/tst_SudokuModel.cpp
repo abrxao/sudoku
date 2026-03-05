@@ -1,6 +1,6 @@
 #include <QtTest>
 #include <QSet>
-#include "../..src/model/SudokuModel.h"
+#include "../../src/model/SudokuModel.h"
 
 class TestSudokuModel : public QObject
 {

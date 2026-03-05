@@ -1,6 +1,7 @@
 #include "SudokuModel.h"
 #include <QFile>
 #include <QTextStream>
+#include <QRandomGenerator>
 #include <QDebug>
 
 SudokuModel::SudokuModel()
@@ -22,18 +23,57 @@ int SudokuModel::getValue(int row, int col) const
   return m_grid[row][col];
 }
 
-bool SudokuModel::loadFirstGridFromFile(const QString &filePath)
+QString SudokuModel::getFilePathForDifficulty(Difficulty diff) const
 {
+  switch (diff)
+  {
+  case Difficulty::Easy:
+    return ":/Easy.txt";
+  case Difficulty::Medium:
+    return ":/Medium.txt";
+  case Difficulty::Hard:
+    return ":/Hard.txt";
+  case Difficulty::Insane:
+    return ":/Insane.txt";
+  }
+  return ":/Easy.txt";
+}
+
+bool SudokuModel::loadRandomGrid(Difficulty difficulty)
+{
+  QString filePath = getFilePathForDifficulty(difficulty);
   QFile file(filePath);
+
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
   {
+    qWarning() << "Error trying to open assets file:" << filePath;
     return false;
   }
 
   QTextStream in(&file);
   QString firstLine = in.readLine();
 
-  QString gridLine = in.readLine();
+  bool ok;
+  int gridCount = firstLine.toInt(&ok);
+
+  if (!ok || gridCount <= 0)
+  {
+    qWarning() << "File error. Invalid grid count at:" << filePath;
+    return false;
+  }
+
+  int randomIdx = QRandomGenerator::global()->bounded(gridCount);
+
+  QString gridLine;
+  for (int i = 0; i <= randomIdx; ++i)
+  {
+    gridLine = in.readLine();
+    if (gridLine.isNull())
+    {
+      qWarning() << "File ending before get sorted grid.";
+      return false;
+    }
+  }
 
   return loadFromString(gridLine);
 }

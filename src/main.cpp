@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
 
     SudokuModel model;
 
-    if (!model.loadFirstGridFromFile(":/Easy.txt"))
+    if (!model.loadRandomGrid(Difficulty::Easy))
     {
         return -1;
     }
