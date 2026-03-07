@@ -19,13 +19,12 @@ class SudokuModel : public QObject
 
 public:
   explicit SudokuModel(QObject *parent = nullptr);
-
   bool loadFromString(const QString &gridData);
   bool loadRandomGrid(Difficulty difficulty);
-
   int getValue(int row, int col) const;
   void setValue(int row, int col, int value);
   QSet<int> getPossibilities(int row, int col) const;
+  bool isGameWon() const;
 
 signals:
 

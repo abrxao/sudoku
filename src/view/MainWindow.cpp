@@ -2,7 +2,7 @@
 #include <QHeaderView>
 #include <QVBoxLayout>
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), m_isUpdating(false)
 {
   setupUI();
 }
@@ -76,6 +76,7 @@ void MainWindow::clearBoard()
 
 void MainWindow::setCellValue(int row, int col, int value, bool isFixed)
 {
+  m_isUpdating = true;
   QTableWidgetItem *item = m_table->item(row, col);
   if (!item)
   {
@@ -112,6 +113,7 @@ void MainWindow::setCellValue(int row, int col, int value, bool isFixed)
       item->setForeground(QBrush(Qt::blue));
     }
   }
+  m_isUpdating = false;
 }
 
 void MainWindow::onCellChanged(int row, int col)
@@ -139,7 +141,6 @@ void MainWindow::onCellChanged(int row, int col)
       return;
     }
   }
-
   emit cellInput(row, col, value);
 }
 
@@ -171,4 +172,11 @@ void MainWindow::showHelper(int row, int col, const QSet<int> &possibilities)
 void MainWindow::clearHelper()
 {
   m_helperLabel->setText("Select an empty cell\nto see hints.");
+}
+
+void MainWindow::showVictoryMessage()
+{
+  QMessageBox::information(this,
+                           "Sudoku Completed",
+                           "Congratulations! You solved the Sudoku correctly.\nChoose a new level to continue playing.");
 }

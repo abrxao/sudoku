@@ -2,7 +2,6 @@
 #include <QFile>
 #include <QTextStream>
 #include <QRandomGenerator>
-#include <QDebug>
 
 SudokuModel::SudokuModel(QObject *parent) : QObject(parent)
 {
@@ -139,4 +138,53 @@ void SudokuModel::setValue(int row, int col, int value)
     m_grid[row][col] = value;
     emit cellUpdated(row, col, value);
   }
+}
+
+bool SudokuModel::isGameWon() const
+{
+
+  for (int r = 0; r < 9; ++r)
+  {
+    for (int c = 0; c < 9; ++c)
+    {
+      if (m_grid[r][c] == 0)
+      {
+        return false;
+      }
+    }
+  }
+
+  for (int i = 0; i < 9; ++i)
+  {
+    int rowMask = 0, colMask = 0, blockMask = 0;
+
+    for (int j = 0; j < 9; ++j)
+    {
+      int rVal = m_grid[i][j];
+      if ((rowMask & (1 << rVal)))
+      {
+        return false;
+      }
+      rowMask |= (1 << rVal);
+
+      int cVal = m_grid[j][i];
+      if ((colMask & (1 << cVal)))
+      {
+        return false;
+      }
+      colMask |= (1 << cVal);
+
+      int bRow = (i / 3) * 3 + (j / 3);
+      int bCol = (i % 3) * 3 + (j % 3);
+      int bVal = m_grid[bRow][bCol];
+      if ((blockMask & (1 << bVal)))
+      {
+
+        return false;
+      }
+      blockMask |= (1 << bVal);
+    }
+  }
+
+  return true;
 }

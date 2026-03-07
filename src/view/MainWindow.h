@@ -6,6 +6,7 @@
 #include <QComboBox>
 #include <QPushButton>
 #include <QLabel>
+#include <QMessageBox>
 
 class MainWindow : public QMainWindow
 {
@@ -13,14 +14,13 @@ class MainWindow : public QMainWindow
 
 public:
   explicit MainWindow(QWidget *parent = nullptr);
-
   void setCellValue(int row, int col, int value, bool isFixed = false);
   void clearBoard();
   void showHelper(int row, int col, const QSet<int> &possibilities);
   void clearHelper();
+  void showVictoryMessage();
 
 signals:
-
   void cellClicked(int row, int col);
   void cellInput(int row, int col, int value);
   void newGameRequested(int difficultyIndex);

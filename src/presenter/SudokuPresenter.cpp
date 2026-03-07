@@ -1,4 +1,3 @@
-#include <QDebug>
 #include "SudokuPresenter.h"
 
 SudokuPresenter::SudokuPresenter(SudokuModel *model, MainWindow *view, QObject *parent)
@@ -59,6 +58,13 @@ void SudokuPresenter::onCellInput(int row, int col, int value)
 {
   m_model->setValue(row, col, value);
   onCellClicked(row, col);
+
+  bool won = m_model->isGameWon();
+
+  if (won)
+  {
+    m_view->showVictoryMessage();
+  }
 }
 
 void SudokuPresenter::onNewGameRequested(int diffIndex)
