@@ -3,6 +3,9 @@
 
 #include <QMainWindow>
 #include <QTableWidget>
+#include <QComboBox>
+#include <QPushButton>
+#include <QLabel>
 
 class MainWindow : public QMainWindow
 {
@@ -13,13 +16,24 @@ public:
 
   void setCellValue(int row, int col, int value, bool isFixed = false);
   void clearBoard();
+  void showHelper(int row, int col, const QSet<int> &possibilities);
+  void clearHelper();
 
 signals:
 
   void cellClicked(int row, int col);
+  void cellInput(int row, int col, int value);
+  void newGameRequested(int difficultyIndex);
+
+private slots:
+  void onCellChanged(int row, int col);
 
 private:
   QTableWidget *m_table;
+  QLabel *m_helperLabel;
+  QComboBox *m_diffCombo;
+  QPushButton *m_newGameBtn;
+  bool m_isUpdating;
   void setupUI();
 };
 

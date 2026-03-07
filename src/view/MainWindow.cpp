@@ -9,19 +9,33 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
 void MainWindow::setupUI()
 {
-  this->setWindowTitle("Sudoku Assistant");
-  this->setFixedSize(600, 600);
+  this->setWindowTitle("Sudoku Assistant - Pro Version");
+  this->setFixedSize(750, 550);
+
+  QWidget *topBar = new QWidget(this);
+  QHBoxLayout *topLayout = new QHBoxLayout(topBar);
+  topLayout->setContentsMargins(0, 0, 0, 0);
+
+  m_diffCombo = new QComboBox(this);
+  m_diffCombo->addItems({"Easy", "Medium", "Hard", "Insane"});
+  m_diffCombo->setStyleSheet("font-size: 14pt; padding: 5px;");
+
+  m_newGameBtn = new QPushButton("New Game", this);
+  m_newGameBtn->setStyleSheet("font-size: 14pt; padding: 5px; background-color: #2196f3; color: white; font-weight: bold; border-radius: 4px;");
+
+  topLayout->addStretch();
+  topLayout->addWidget(new QLabel("Level:", this));
+  topLayout->addWidget(m_diffCombo);
+  topLayout->addWidget(m_newGameBtn);
+
+  connect(m_newGameBtn, &QPushButton::clicked, this, [this]()
+          { emit newGameRequested(m_diffCombo->currentIndex()); });
 
   m_table = new QTableWidget(9, 9, this);
   m_table->horizontalHeader()->setVisible(false);
   m_table->verticalHeader()->setVisible(false);
-
   m_table->setSelectionMode(QAbstractItemView::SingleSelection);
-  m_table->setFocusPolicy(Qt::NoFocus);
-
-  m_table->setStyleSheet(
-      "QTableWidget { gridline-color: #d0d0d0; }"
-      "QTableWidget::item:selected { background-color: #aed581; color: black; }");
+  m_table->setFocusPolicy(Qt::StrongFocus);
 
   int cellSize = 50;
   for (int i = 0; i < 9; ++i)
@@ -30,16 +44,31 @@ void MainWindow::setupUI()
     m_table->setRowHeight(i, cellSize);
   }
   m_table->setFixedSize(cellSize * 9 + 2, cellSize * 9 + 2);
+  m_table->setStyleSheet(
+      "QTableWidget { gridline-color: #d0d0d0; font-size: 16pt; }"
+      "QTableWidget::item:selected { background-color: #bbdefb; color: black; }");
 
-  connect(m_table, &QTableWidget::cellClicked, this, &MainWindow::cellClicked);
+  m_helperLabel = new QLabel("Select an empty cell\nto see hints.", this);
+  m_helperLabel->setAlignment(Qt::AlignTop | Qt::AlignLeft);
+  m_helperLabel->setWordWrap(true);
+  m_helperLabel->setStyleSheet("QLabel { font-size: 14pt; padding: 20px; background-color: #f5f5f5; border: 1px solid #ccc; border-radius: 5px; }");
+  m_helperLabel->setFixedWidth(250);
 
   QWidget *centralWidget = new QWidget(this);
-  QVBoxLayout *layout = new QVBoxLayout(centralWidget);
-  layout->addWidget(m_table);
-  layout->setAlignment(Qt::AlignCenter);
-  setCentralWidget(centralWidget);
-}
+  QVBoxLayout *mainLayout = new QVBoxLayout(centralWidget);
 
+  QHBoxLayout *gameLayout = new QHBoxLayout();
+  gameLayout->addWidget(m_table);
+  gameLayout->addWidget(m_helperLabel);
+
+  mainLayout->addWidget(topBar);
+  mainLayout->addLayout(gameLayout);
+
+  setCentralWidget(centralWidget);
+
+  connect(m_table, &QTableWidget::cellClicked, this, &MainWindow::cellClicked);
+  connect(m_table, &QTableWidget::cellChanged, this, &MainWindow::onCellChanged);
+}
 void MainWindow::clearBoard()
 {
   m_table->clearContents();
@@ -79,9 +108,67 @@ void MainWindow::setCellValue(int row, int col, int value, bool isFixed)
     }
     else
     {
-
       item->setBackground(quadrantColor);
       item->setForeground(QBrush(Qt::blue));
     }
   }
+}
+
+void MainWindow::onCellChanged(int row, int col)
+{
+  if (m_isUpdating)
+    return;
+
+  QTableWidgetItem *item = m_table->item(row, col);
+  if (!item)
+    return;
+
+  QString text = item->text();
+  int value = 0;
+
+  if (!text.isEmpty())
+  {
+    bool ok;
+    value = text.toInt(&ok);
+    if (!ok || value < 1 || value > 9)
+    {
+
+      m_isUpdating = true;
+      item->setText("");
+      m_isUpdating = false;
+      return;
+    }
+  }
+
+  emit cellInput(row, col, value);
+}
+
+void MainWindow::showHelper(int row, int col, const QSet<int> &possibilities)
+{
+  if (possibilities.isEmpty())
+  {
+    m_helperLabel->setText(QString("Cell (%1, %2)\n\nNo valid possibilities or already filled.").arg(row + 1).arg(col + 1));
+    return;
+  }
+
+  QList<int> list(possibilities.begin(), possibilities.end());
+  std::sort(list.begin(), list.end());
+
+  QString helperText = QString("Cell (%1, %2)\n\nPossibilities:\n").arg(row + 1).arg(col + 1);
+  for (int p : list)
+  {
+    helperText += QString::number(p) + "  ";
+  }
+
+  if (list.size() == 1)
+  {
+    helperText += "\n\n⭐ Only one option!";
+  }
+
+  m_helperLabel->setText(helperText);
+}
+
+void MainWindow::clearHelper()
+{
+  m_helperLabel->setText("Select an empty cell\nto see hints.");
 }

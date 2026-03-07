@@ -7,8 +7,9 @@ SudokuPresenter::SudokuPresenter(SudokuModel *model, MainWindow *view, QObject *
 
   connect(m_model, &SudokuModel::gridLoaded, this, &SudokuPresenter::onGridLoaded);
   connect(m_model, &SudokuModel::cellUpdated, this, &SudokuPresenter::onCellUpdated);
-
   connect(m_view, &MainWindow::cellClicked, this, &SudokuPresenter::onCellClicked);
+  connect(m_view, &MainWindow::cellInput, this, &SudokuPresenter::onCellInput);
+  connect(m_view, &MainWindow::newGameRequested, this, &SudokuPresenter::onNewGameRequested);
 }
 
 void SudokuPresenter::startGame(Difficulty diff)
@@ -44,17 +45,28 @@ void SudokuPresenter::onCellUpdated(int row, int col, int value)
 
 void SudokuPresenter::onCellClicked(int row, int col)
 {
+  if (m_model->getValue(row, col) != 0)
+  {
+    m_view->clearHelper();
+    return;
+  }
+
   QSet<int> possibilities = m_model->getPossibilities(row, col);
+  m_view->showHelper(row, col, possibilities);
+}
 
-  if (possibilities.isEmpty())
-  {
-    qDebug() << "Cell (" << row << "," << col << ") clicked. Any possibles values or already filled.";
-  }
-  else
-  {
-    QList<int> list(possibilities.begin(), possibilities.end());
-    std::sort(list.begin(), list.end());
+void SudokuPresenter::onCellInput(int row, int col, int value)
+{
+  m_model->setValue(row, col, value);
+  onCellClicked(row, col);
+}
 
-    qDebug() << "Cell (" << row << "," << col << ") clicked. Valids values:" << list;
-  }
+void SudokuPresenter::onNewGameRequested(int diffIndex)
+{
+  Difficulty selectedDiff = static_cast<Difficulty>(diffIndex);
+
+  m_view->clearBoard();
+  m_view->clearHelper();
+
+  m_model->loadRandomGrid(selectedDiff);
 }
