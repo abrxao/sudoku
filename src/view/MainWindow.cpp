@@ -15,7 +15,13 @@ void MainWindow::setupUI()
   m_table = new QTableWidget(9, 9, this);
   m_table->horizontalHeader()->setVisible(false);
   m_table->verticalHeader()->setVisible(false);
+
   m_table->setSelectionMode(QAbstractItemView::SingleSelection);
+  m_table->setFocusPolicy(Qt::NoFocus);
+
+  m_table->setStyleSheet(
+      "QTableWidget { gridline-color: #d0d0d0; }"
+      "QTableWidget::item:selected { background-color: #aed581; color: black; }");
 
   int cellSize = 50;
   for (int i = 0; i < 9; ++i)
@@ -23,8 +29,9 @@ void MainWindow::setupUI()
     m_table->setColumnWidth(i, cellSize);
     m_table->setRowHeight(i, cellSize);
   }
-
   m_table->setFixedSize(cellSize * 9 + 2, cellSize * 9 + 2);
+
+  connect(m_table, &QTableWidget::cellClicked, this, &MainWindow::cellClicked);
 
   QWidget *centralWidget = new QWidget(this);
   QVBoxLayout *layout = new QVBoxLayout(centralWidget);
@@ -32,6 +39,7 @@ void MainWindow::setupUI()
   layout->setAlignment(Qt::AlignCenter);
   setCentralWidget(centralWidget);
 }
+
 void MainWindow::clearBoard()
 {
   m_table->clearContents();
@@ -46,10 +54,13 @@ void MainWindow::setCellValue(int row, int col, int value, bool isFixed)
     m_table->setItem(row, col, item);
   }
 
+  bool isDarkQuadrant = ((row / 3) + (col / 3)) % 2 != 0;
+  QColor quadrantColor = isDarkQuadrant ? QColor("#f4f6f8") : QColor("#ffffff");
+
   if (value == 0)
   {
     item->setText("");
-    item->setBackground(Qt::white);
+    item->setBackground(quadrantColor);
     item->setFlags(item->flags() | Qt::ItemIsEditable);
   }
   else
@@ -69,7 +80,8 @@ void MainWindow::setCellValue(int row, int col, int value, bool isFixed)
     else
     {
 
-      item->setBackground(Qt::white);
+      item->setBackground(quadrantColor);
+      item->setForeground(QBrush(Qt::blue));
     }
   }
 }

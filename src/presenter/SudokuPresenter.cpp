@@ -1,3 +1,4 @@
+#include <QDebug>
 #include "SudokuPresenter.h"
 
 SudokuPresenter::SudokuPresenter(SudokuModel *model, MainWindow *view, QObject *parent)
@@ -43,4 +44,17 @@ void SudokuPresenter::onCellUpdated(int row, int col, int value)
 
 void SudokuPresenter::onCellClicked(int row, int col)
 {
+  QSet<int> possibilities = m_model->getPossibilities(row, col);
+
+  if (possibilities.isEmpty())
+  {
+    qDebug() << "Cell (" << row << "," << col << ") clicked. Any possibles values or already filled.";
+  }
+  else
+  {
+    QList<int> list(possibilities.begin(), possibilities.end());
+    std::sort(list.begin(), list.end());
+
+    qDebug() << "Cell (" << row << "," << col << ") clicked. Valids values:" << list;
+  }
 }
