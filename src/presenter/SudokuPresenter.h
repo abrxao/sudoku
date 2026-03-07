@@ -1,0 +1,31 @@
+#ifndef SUDOKUPRESENTER_H
+#define SUDOKUPRESENTER_H
+
+#include <QObject>
+#include "../model/SudokuModel.h"
+#include "../view/MainWindow.h"
+
+class SudokuPresenter : public QObject
+{
+  Q_OBJECT
+
+public:
+  SudokuPresenter(SudokuModel *model, MainWindow *view, QObject *parent = nullptr);
+
+  void startGame(Difficulty diff = Difficulty::Easy);
+
+private slots:
+
+  void onGridLoaded();
+  void onCellUpdated(int row, int col, int value);
+
+  void onCellClicked(int row, int col);
+
+private:
+  SudokuModel *m_model;
+  MainWindow *m_view;
+
+  void syncViewWithModel();
+};
+
+#endif // SUDOKUPRESENTER_H

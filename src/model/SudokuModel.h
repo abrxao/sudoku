@@ -1,8 +1,8 @@
 #ifndef SUDOKUMODEL_H
 #define SUDOKUMODEL_H
 
+#include <QObject>
 #include <QString>
-#include <QVector>
 #include <QSet>
 
 enum class Difficulty
@@ -13,15 +13,24 @@ enum class Difficulty
   Insane
 };
 
-class SudokuModel
+class SudokuModel : public QObject
 {
-public:
-  SudokuModel();
+  Q_OBJECT
 
-  bool loadRandomGrid(Difficulty difficulty);
-  int getValue(int row, int col) const;
+public:
+  explicit SudokuModel(QObject *parent = nullptr);
+
   bool loadFromString(const QString &gridData);
+  bool loadRandomGrid(Difficulty difficulty);
+
+  int getValue(int row, int col) const;
+  void setValue(int row, int col, int value);
   QSet<int> getPossibilities(int row, int col) const;
+
+signals:
+
+  void gridLoaded();
+  void cellUpdated(int row, int col, int value);
 
 private:
   int m_grid[9][9];
@@ -29,4 +38,4 @@ private:
   QString getFilePathForDifficulty(Difficulty diff) const;
 };
 
-#endif // SUDOKUMODEL_H
+#endif

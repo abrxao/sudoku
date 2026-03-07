@@ -4,7 +4,7 @@
 #include <QRandomGenerator>
 #include <QDebug>
 
-SudokuModel::SudokuModel()
+SudokuModel::SudokuModel(QObject *parent) : QObject(parent)
 {
   clearGrid();
 }
@@ -99,6 +99,7 @@ bool SudokuModel::loadFromString(const QString &gridData)
       m_grid[row][col] = c.digitValue();
     }
   }
+  emit gridLoaded();
   return true;
 }
 
@@ -129,4 +130,13 @@ QSet<int> SudokuModel::getPossibilities(int row, int col) const
   }
 
   return possibilities;
+}
+
+void SudokuModel::setValue(int row, int col, int value)
+{
+  if (row >= 0 && row < 9 && col >= 0 && col < 9)
+  {
+    m_grid[row][col] = value;
+    emit cellUpdated(row, col, value);
+  }
 }

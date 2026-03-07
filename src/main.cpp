@@ -1,21 +1,19 @@
 #include <QApplication>
 #include "model/SudokuModel.h"
 #include "view/MainWindow.h"
+#include "presenter/SudokuPresenter.h"
 
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
     SudokuModel model;
+    MainWindow view;
 
-    if (!model.loadRandomGrid(Difficulty::Easy))
-    {
-        return -1;
-    }
+    SudokuPresenter presenter(&model, &view);
 
-    MainWindow window;
-    window.displayGrid(&model);
-    window.show();
+    presenter.startGame(Difficulty::Easy);
+    view.show();
 
     return app.exec();
 }

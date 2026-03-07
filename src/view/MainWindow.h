@@ -3,7 +3,6 @@
 
 #include <QMainWindow>
 #include <QTableWidget>
-#include "../model/SudokuModel.h"
 
 class MainWindow : public QMainWindow
 {
@@ -12,7 +11,12 @@ class MainWindow : public QMainWindow
 public:
   explicit MainWindow(QWidget *parent = nullptr);
 
-  void displayGrid(SudokuModel *model);
+  void setCellValue(int row, int col, int value, bool isFixed = false);
+  void clearBoard();
+
+signals:
+
+  void cellClicked(int row, int col);
 
 private:
   QTableWidget *m_table;

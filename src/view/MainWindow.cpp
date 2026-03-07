@@ -32,32 +32,44 @@ void MainWindow::setupUI()
   layout->setAlignment(Qt::AlignCenter);
   setCentralWidget(centralWidget);
 }
-
-void MainWindow::displayGrid(SudokuModel *model)
+void MainWindow::clearBoard()
 {
-  if (!model)
-    return;
+  m_table->clearContents();
+}
 
-  for (int row = 0; row < 9; ++row)
+void MainWindow::setCellValue(int row, int col, int value, bool isFixed)
+{
+  QTableWidgetItem *item = m_table->item(row, col);
+  if (!item)
   {
-    for (int col = 0; col < 9; ++col)
+    item = new QTableWidgetItem();
+    m_table->setItem(row, col, item);
+  }
+
+  if (value == 0)
+  {
+    item->setText("");
+    item->setBackground(Qt::white);
+    item->setFlags(item->flags() | Qt::ItemIsEditable);
+  }
+  else
+  {
+    item->setText(QString::number(value));
+    item->setTextAlignment(Qt::AlignCenter);
+
+    if (isFixed)
     {
-      int val = model->getValue(row, col);
-      QTableWidgetItem *item = new QTableWidgetItem();
+      QFont font = item->font();
+      font.setBold(true);
+      font.setPointSize(14);
+      item->setFont(font);
+      item->setBackground(QColor("#e0e0e0"));
+      item->setFlags(item->flags() & ~Qt::ItemIsEditable);
+    }
+    else
+    {
 
-      if (val != 0)
-      {
-        item->setText(QString::number(val));
-        item->setTextAlignment(Qt::AlignCenter);
-        item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-
-        QFont font = item->font();
-        font.setBold(true);
-        font.setPointSize(14);
-        item->setFont(font);
-        item->setBackground(QColor("#e0e0e0"));
-      }
-      m_table->setItem(row, col, item);
+      item->setBackground(Qt::white);
     }
   }
 }

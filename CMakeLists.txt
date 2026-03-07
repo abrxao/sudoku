@@ -16,6 +16,7 @@ set(SOURCES
     src/main.cpp
     src/model/SudokuModel.cpp
     src/view/MainWindow.cpp
+    src/presenter/SudokuPresenter.cpp
 )
 
 add_executable(SudokuAssistant ${SOURCES} ${RESOURCES})
