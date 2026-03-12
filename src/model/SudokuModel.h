@@ -25,6 +25,7 @@ public:
   void setValue(int row, int col, int value);
   QSet<int> getPossibilities(int row, int col) const;
   bool isGameWon() const;
+  bool isValidMove(int row, int col, int value) const;
 
 signals:
 

@@ -20,6 +20,7 @@ public:
   void clearHelper();
   void showVictoryMessage();
   void setCellStuck(int row, int col, bool isStuck);
+  void showError(const QString &message);
 
 signals:
   void cellClicked(int row, int col);

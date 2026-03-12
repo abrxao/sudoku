@@ -202,3 +202,7 @@ void MainWindow::setCellStuck(int row, int col, bool isStuck)
 
   m_isUpdating = false;
 }
+void MainWindow::showError(const QString &message)
+{
+  m_helperLabel->setText(QString("<span style='color: #d32f2f; font-weight: bold;'>⚠️ Invalid Action</span><br><br>%1").arg(message));
+}

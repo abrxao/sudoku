@@ -185,3 +185,31 @@ bool SudokuModel::isGameWon() const
 
   return true;
 }
+bool SudokuModel::isValidMove(int row, int col, int value) const
+{
+  if (value == 0)
+    return true;
+
+  for (int i = 0; i < 9; ++i)
+  {
+    if (i != col && m_grid[row][i] == value)
+      return false;
+    if (i != row && m_grid[i][col] == value)
+      return false;
+  }
+
+  int startRow = (row / 3) * 3;
+  int startCol = (col / 3) * 3;
+  for (int i = 0; i < 3; ++i)
+  {
+    for (int j = 0; j < 3; ++j)
+    {
+      int r = startRow + i;
+      int c = startCol + j;
+      if ((r != row || c != col) && m_grid[r][c] == value)
+        return false;
+    }
+  }
+
+  return true;
+}

@@ -57,19 +57,28 @@ void SudokuPresenter::onCellClicked(int row, int col)
 
 void SudokuPresenter::onCellInput(int row, int col, int value)
 {
+
+  if (!m_model->isValidMove(row, col, value))
+  {
+
+    int safeOldValue = m_model->getValue(row, col);
+    m_view->setCellValue(row, col, safeOldValue, false);
+
+    m_view->showError(QString("The number <b>%1</b> is already at same line, column or quadrant.").arg(value));
+    return;
+  }
+
   m_model->setValue(row, col, value);
+
   onCellClicked(row, col);
 
   checkStuckCells();
 
-  bool won = m_model->isGameWon();
-
-  if (won)
+  if (m_model->isGameWon())
   {
     m_view->showVictoryMessage();
   }
 }
-
 void SudokuPresenter::onNewGameRequested(int diffIndex)
 {
   Difficulty selectedDiff = static_cast<Difficulty>(diffIndex);
