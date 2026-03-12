@@ -18,7 +18,7 @@ private slots:
 
   void onGridLoaded();
   void onCellUpdated(int row, int col, int value);
-  void onCellClicked(int row, int col);
+  void onCellSelected(int row, int col);
   void onCellInput(int row, int col, int value);
   void onNewGameRequested(int diffIndex);
 

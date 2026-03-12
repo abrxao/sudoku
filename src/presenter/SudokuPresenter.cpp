@@ -6,7 +6,7 @@ SudokuPresenter::SudokuPresenter(SudokuModel *model, MainWindow *view, QObject *
 
   connect(m_model, &SudokuModel::gridLoaded, this, &SudokuPresenter::onGridLoaded);
   connect(m_model, &SudokuModel::cellUpdated, this, &SudokuPresenter::onCellUpdated);
-  connect(m_view, &MainWindow::cellClicked, this, &SudokuPresenter::onCellClicked);
+  connect(m_view, &MainWindow::cellSelected, this, &SudokuPresenter::onCellSelected);
   connect(m_view, &MainWindow::cellInput, this, &SudokuPresenter::onCellInput);
   connect(m_view, &MainWindow::newGameRequested, this, &SudokuPresenter::onNewGameRequested);
 }
@@ -43,7 +43,7 @@ void SudokuPresenter::onCellUpdated(int row, int col, int value)
   m_view->setCellValue(row, col, value, false);
 }
 
-void SudokuPresenter::onCellClicked(int row, int col)
+void SudokuPresenter::onCellSelected(int row, int col)
 {
   if (m_model->getValue(row, col) != 0)
   {
@@ -70,7 +70,7 @@ void SudokuPresenter::onCellInput(int row, int col, int value)
 
   m_model->setValue(row, col, value);
 
-  onCellClicked(row, col);
+  onCellSelected(row, col);
 
   checkStuckCells();
 

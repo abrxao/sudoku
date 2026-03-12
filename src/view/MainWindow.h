@@ -7,6 +7,8 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QMessageBox>
+#include <QEvent>
+#include <QKeyEvent>
 
 class MainWindow : public QMainWindow
 {
@@ -21,14 +23,16 @@ public:
   void showVictoryMessage();
   void setCellStuck(int row, int col, bool isStuck);
   void showError(const QString &message);
+  bool eventFilter(QObject *obj, QEvent *event) override;
 
 signals:
-  void cellClicked(int row, int col);
+  void cellSelected(int row, int col);
   void cellInput(int row, int col, int value);
   void newGameRequested(int difficultyIndex);
 
 private slots:
   void onCellChanged(int row, int col);
+  void onCurrentCellChanged(int currentRow, int currentColumn, int previousRow, int previousColumn);
 
 private:
   QTableWidget *m_table;

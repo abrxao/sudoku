@@ -66,8 +66,10 @@ void MainWindow::setupUI()
 
   setCentralWidget(centralWidget);
 
-  connect(m_table, &QTableWidget::cellClicked, this, &MainWindow::cellClicked);
+  connect(m_table, &QTableWidget::currentCellChanged, this, &MainWindow::onCurrentCellChanged);
   connect(m_table, &QTableWidget::cellChanged, this, &MainWindow::onCellChanged);
+
+  m_table->installEventFilter(this);
 }
 void MainWindow::clearBoard()
 {
@@ -202,7 +204,57 @@ void MainWindow::setCellStuck(int row, int col, bool isStuck)
 
   m_isUpdating = false;
 }
+
 void MainWindow::showError(const QString &message)
 {
   m_helperLabel->setText(QString("<span style='color: #d32f2f; font-weight: bold;'>⚠️ Invalid Action</span><br><br>%1").arg(message));
+}
+
+void MainWindow::onCurrentCellChanged(int currentRow, int currentColumn, int previousRow, int previousColumn)
+{
+  if (currentRow >= 0 && currentColumn >= 0)
+  {
+    emit cellSelected(currentRow, currentColumn);
+  }
+}
+
+bool MainWindow::eventFilter(QObject *obj, QEvent *event)
+{
+  if (obj == m_table && event->type() == QEvent::KeyPress)
+  {
+    QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+    int row = m_table->currentRow();
+    int col = m_table->currentColumn();
+
+    if (row < 0 || col < 0)
+      return false;
+
+    int key = keyEvent->key();
+
+    if (key == Qt::Key_Up || key == Qt::Key_Down || key == Qt::Key_Left || key == Qt::Key_Right)
+    {
+      return false;
+    }
+
+    QTableWidgetItem *item = m_table->item(row, col);
+    if (item && !(item->flags() & Qt::ItemIsEditable))
+    {
+      return true;
+    }
+
+    if ((key >= Qt::Key_1 && key <= Qt::Key_9))
+    {
+      int value = key - Qt::Key_0;
+      emit cellInput(row, col, value);
+      return true;
+    }
+
+    if (key == Qt::Key_Backspace || key == Qt::Key_Delete)
+    {
+      emit cellInput(row, col, 0);
+      return true;
+    }
+  }
+
+  return QMainWindow::eventFilter(obj, event);
 }
