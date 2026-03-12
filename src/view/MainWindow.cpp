@@ -9,22 +9,22 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), m_isUpdating(fals
 
 void MainWindow::setupUI()
 {
-  this->setWindowTitle("Sudoku Assistant - Pro Version");
+  this->setWindowTitle(tr("Sudoku Assistant - Pro Version"));
   this->setFixedSize(750, 550);
 
   QWidget *topBar = new QWidget(this);
   QHBoxLayout *topLayout = new QHBoxLayout(topBar);
   topLayout->setContentsMargins(0, 0, 0, 0);
 
-  m_diffCombo = new QComboBox(this);
+    m_diffCombo = new QComboBox(this);
   m_diffCombo->addItems({"Easy", "Medium", "Hard", "Insane"});
   m_diffCombo->setStyleSheet("font-size: 14pt; padding: 5px;");
 
-  m_newGameBtn = new QPushButton("New Game", this);
+  m_newGameBtn = new QPushButton(tr("New Game"), this);
   m_newGameBtn->setStyleSheet("font-size: 14pt; padding: 5px; background-color: #2196f3; color: white; font-weight: bold; border-radius: 4px;");
 
   topLayout->addStretch();
-  topLayout->addWidget(new QLabel("Level:", this));
+  topLayout->addWidget(new QLabel(tr("Level:"), this));
   topLayout->addWidget(m_diffCombo);
   topLayout->addWidget(m_newGameBtn);
 
@@ -48,7 +48,7 @@ void MainWindow::setupUI()
       "QTableWidget { gridline-color: #d0d0d0; font-size: 16pt; }"
       "QTableWidget::item:selected { background-color: #bbdefb; color: black; }");
 
-  m_helperLabel = new QLabel("Select an empty cell\nto see hints.", this);
+  m_helperLabel = new QLabel(tr("Select an empty cell\nto see hints."), this);
   m_helperLabel->setAlignment(Qt::AlignTop | Qt::AlignLeft);
   m_helperLabel->setWordWrap(true);
   m_helperLabel->setStyleSheet("QLabel { font-size: 14pt; padding: 20px; background-color: #f5f5f5; border: 1px solid #ccc; border-radius: 5px; }");
@@ -150,14 +150,14 @@ void MainWindow::showHelper(int row, int col, const QSet<int> &possibilities)
 {
   if (possibilities.isEmpty())
   {
-    m_helperLabel->setText(QString("Cell (%1, %2)\n\nNo valid possibilities or already filled.").arg(row + 1).arg(col + 1));
+    m_helperLabel->setText(tr("Cell (%1, %2)\n\nNo valid possibilities or already filled.").arg(row + 1).arg(col + 1));
     return;
   }
 
   QList<int> list(possibilities.begin(), possibilities.end());
   std::sort(list.begin(), list.end());
 
-  QString helperText = QString("Cell (%1, %2)\n\nPossibilities:\n").arg(row + 1).arg(col + 1);
+  QString helperText = tr("Cell (%1, %2)\n\nPossibilities:\n").arg(row + 1).arg(col + 1);
   for (int p : list)
   {
     helperText += QString::number(p) + "  ";
@@ -165,7 +165,7 @@ void MainWindow::showHelper(int row, int col, const QSet<int> &possibilities)
 
   if (list.size() == 1)
   {
-    helperText += "\n\n⭐ Only one option!";
+    helperText += tr("\n\n⭐ Only one option!");
   }
 
   m_helperLabel->setText(helperText);
@@ -173,16 +173,15 @@ void MainWindow::showHelper(int row, int col, const QSet<int> &possibilities)
 
 void MainWindow::clearHelper()
 {
-  m_helperLabel->setText("Select an empty cell\nto see hints.");
+  m_helperLabel->setText(tr("Select an empty cell\nto see hints."));
 }
 
 void MainWindow::showVictoryMessage()
 {
   QMessageBox::information(this,
-                           "Sudoku Completed",
-                           "Congratulations! You solved the Sudoku correctly.\nChoose a new level to continue playing.");
+                           tr("Sudoku Completed"),
+                           tr("Congratulations! You solved the Sudoku correctly.\nChoose a new level to continue playing."));
 }
-
 void MainWindow::setCellStuck(int row, int col, bool isStuck)
 {
   m_isUpdating = true;
@@ -207,7 +206,9 @@ void MainWindow::setCellStuck(int row, int col, bool isStuck)
 
 void MainWindow::showError(const QString &message)
 {
-  m_helperLabel->setText(QString("<span style='color: #d32f2f; font-weight: bold;'>⚠️ Invalid Action</span><br><br>%1").arg(message));
+  m_helperLabel->setText(QString("<span style='color: #d32f2f; font-weight: bold;'>⚠️ %1</span><br><br>%2")
+                             .arg(tr("Invalid Action"))
+                             .arg(message));
 }
 
 void MainWindow::onCurrentCellChanged(int currentRow, int currentColumn, int previousRow, int previousColumn)
