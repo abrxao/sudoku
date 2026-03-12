@@ -9,6 +9,8 @@
 #include <QMessageBox>
 #include <QEvent>
 #include <QKeyEvent>
+#include <QTranslator>
+#include <QCoreApplication>
 
 class MainWindow : public QMainWindow
 {
@@ -24,7 +26,7 @@ public:
   void setCellStuck(int row, int col, bool isStuck);
   void showError(const QString &message);
   bool eventFilter(QObject *obj, QEvent *event) override;
-
+  void retranslateUI();
 signals:
   void cellSelected(int row, int col);
   void cellInput(int row, int col, int value);
@@ -39,6 +41,9 @@ private:
   QLabel *m_helperLabel;
   QComboBox *m_diffCombo;
   QPushButton *m_newGameBtn;
+  QComboBox *m_langCombo;
+  QLabel *m_levelLabel;
+  QTranslator m_translator;
   bool m_isUpdating;
   void setupUI();
 };

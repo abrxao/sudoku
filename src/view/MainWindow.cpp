@@ -16,7 +16,30 @@ void MainWindow::setupUI()
   QHBoxLayout *topLayout = new QHBoxLayout(topBar);
   topLayout->setContentsMargins(0, 0, 0, 0);
 
-    m_diffCombo = new QComboBox(this);
+  m_langCombo = new QComboBox(this);
+  m_langCombo->addItems({"English", "Français"});
+  m_langCombo->setStyleSheet("font-size: 14pt; padding: 5px;");
+
+  connect(m_langCombo, &QComboBox::currentIndexChanged, this, [this](int index)
+          {
+            if (index == 1)
+            { 
+              if (m_translator.load(":/i18n/sudoku_fr.qm"))
+              {
+                qApp->installTranslator(&m_translator);
+              }
+              else
+              {
+                qDebug() << "[I18N ERROR] Erro to load sudoku_fr.qm. Verify CMake file.";
+              }
+            }
+            else
+            { 
+              qApp->removeTranslator(&m_translator);
+            }
+            retranslateUI(); });
+
+  m_diffCombo = new QComboBox(this);
   m_diffCombo->addItems({"Easy", "Medium", "Hard", "Insane"});
   m_diffCombo->setStyleSheet("font-size: 14pt; padding: 5px;");
 
@@ -258,4 +281,24 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
   }
 
   return QMainWindow::eventFilter(obj, event);
+}
+
+void MainWindow::retranslateUI()
+{
+
+  this->setWindowTitle(tr("Sudoku Assistant - Pro Version"));
+  m_levelLabel->setText(tr("Level:"));
+  m_newGameBtn->setText(tr("New Game"));
+
+  m_diffCombo->setItemText(0, tr("Easy"));
+  m_diffCombo->setItemText(1, tr("Medium"));
+  m_diffCombo->setItemText(2, tr("Hard"));
+  m_diffCombo->setItemText(3, tr("Insane"));
+
+  clearHelper();
+
+  m_newGameBtn->setToolTip(tr("Start a new game with the selected difficulty"));
+  m_diffCombo->setToolTip(tr("Select the difficulty level"));
+  m_langCombo->setToolTip(tr("Change the application language"));
+  m_table->setToolTip(tr("Use arrow keys to navigate, numbers 1-9 to input, and Backspace to clear"));
 }
