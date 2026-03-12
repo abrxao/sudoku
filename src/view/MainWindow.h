@@ -27,6 +27,8 @@ public:
   void showError(const QString &message);
   bool eventFilter(QObject *obj, QEvent *event) override;
   void retranslateUI();
+  void setCellPossibilities(int row, int col, const QSet<int> &possibilities);
+
 signals:
   void cellSelected(int row, int col);
   void cellInput(int row, int col, int value);

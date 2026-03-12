@@ -1,4 +1,5 @@
 #include "MainWindow.h"
+#include "SudokuCellDelegate.h"
 #include <QHeaderView>
 #include <QVBoxLayout>
 
@@ -83,7 +84,7 @@ void MainWindow::setupUI()
 
   connect(m_table, &QTableWidget::currentCellChanged, this, &MainWindow::onCurrentCellChanged);
   m_table->installEventFilter(this);
-
+  m_table->setItemDelegate(new SudokuCellDelegate(m_table));
   retranslateUI();
 }
 void MainWindow::clearBoard()
@@ -301,4 +302,19 @@ void MainWindow::retranslateUI()
   m_diffCombo->setToolTip(tr("Select the difficulty level"));
   m_langCombo->setToolTip(tr("Change the application language"));
   m_table->setToolTip(tr("Use arrow keys to navigate, numbers 1-9 to input, and Backspace to clear"));
+}
+
+void MainWindow::setCellPossibilities(int row, int col, const QSet<int> &possibilities)
+{
+  QTableWidgetItem *item = m_table->item(row, col);
+  if (item)
+  {
+    int mask = 0;
+
+    for (int p : possibilities)
+    {
+      mask |= (1 << (p - 1));
+    }
+    item->setData(Qt::UserRole, mask);
+  }
 }
