@@ -10,77 +10,69 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), m_isUpdating(fals
 void MainWindow::setupUI()
 {
   this->setWindowTitle(tr("Sudoku Assistant - Pro Version"));
-  this->setFixedSize(750, 550);
+  this->setFixedSize(760, 560);
+
+  this->setStyleSheet("QMainWindow { background-color: #F4F6F8; }");
 
   QWidget *topBar = new QWidget(this);
   QHBoxLayout *topLayout = new QHBoxLayout(topBar);
-  topLayout->setContentsMargins(0, 0, 0, 0);
+  topLayout->setContentsMargins(10, 10, 10, 10);
 
   m_langCombo = new QComboBox(this);
   m_langCombo->addItems({"English", "Français"});
-  m_langCombo->setStyleSheet("font-size: 14pt; padding: 5px;");
+  QString comboStyle = "QComboBox { font-size: 13pt; padding: 6px 12px; border: 2px solid #B2DFDB; border-radius: 6px; background-color: white; color: #263238; font-weight: bold; }"
+                       "QComboBox::drop-down { border: none; }";
+  m_langCombo->setStyleSheet(comboStyle);
 
-  connect(m_langCombo, &QComboBox::currentIndexChanged, this, [this](int index)
-          {
-            if (index == 1)
-            { 
-              if (m_translator.load(":/i18n/sudoku_fr.qm"))
-              {
-                qApp->installTranslator(&m_translator);
-              }
-              else
-              {
-                qDebug() << "[I18N ERROR] Erro to load sudoku_fr.qm. Verify CMake file.";
-              }
-            }
-            else
-            { 
-              qApp->removeTranslator(&m_translator);
-            }
-            retranslateUI(); });
+  m_levelLabel = new QLabel(this);
+  m_levelLabel->setStyleSheet("font-size: 14pt; color: #00796B; font-weight: bold;");
 
   m_diffCombo = new QComboBox(this);
   m_diffCombo->addItems({"Easy", "Medium", "Hard", "Insane"});
-  m_diffCombo->setStyleSheet("font-size: 14pt; padding: 5px;");
+  m_diffCombo->setStyleSheet(comboStyle);
 
-  m_newGameBtn = new QPushButton(tr("New Game"), this);
-  m_newGameBtn->setStyleSheet("font-size: 14pt; padding: 5px; background-color: #2196f3; color: white; font-weight: bold; border-radius: 4px;");
+  m_newGameBtn = new QPushButton(this);
+  m_newGameBtn->setStyleSheet(
+      "QPushButton { font-size: 14pt; padding: 8px 16px; background-color: #FF9800; color: white; font-weight: bold; border-radius: 6px; border: none; }"
+      "QPushButton:hover { background-color: #F57C00; }"
+      "QPushButton:pressed { background-color: #E65100; }");
 
+  topLayout->addWidget(m_langCombo);
   topLayout->addStretch();
-  topLayout->addWidget(new QLabel(tr("Level:"), this));
+  topLayout->addWidget(m_levelLabel);
   topLayout->addWidget(m_diffCombo);
   topLayout->addWidget(m_newGameBtn);
-
-  connect(m_newGameBtn, &QPushButton::clicked, this, [this]()
-          { emit newGameRequested(m_diffCombo->currentIndex()); });
 
   m_table = new QTableWidget(9, 9, this);
   m_table->horizontalHeader()->setVisible(false);
   m_table->verticalHeader()->setVisible(false);
   m_table->setSelectionMode(QAbstractItemView::SingleSelection);
-  m_table->setFocusPolicy(Qt::StrongFocus);
 
-  int cellSize = 50;
+  m_table->setStyleSheet(
+      "QTableWidget { gridline-color: #80CBC4; font-size: 18pt; background-color: white; border: 2px solid #00796B; border-radius: 8px; }"
+      "QTableWidget::item:selected { background-color: #E0F2F1; color: #00796B; border: 2px solid #009688; }");
+
+  int cellSize = 52;
   for (int i = 0; i < 9; ++i)
   {
     m_table->setColumnWidth(i, cellSize);
     m_table->setRowHeight(i, cellSize);
   }
-  m_table->setFixedSize(cellSize * 9 + 2, cellSize * 9 + 2);
-  m_table->setStyleSheet(
-      "QTableWidget { gridline-color: #d0d0d0; font-size: 16pt; }"
-      "QTableWidget::item:selected { background-color: #bbdefb; color: black; }");
+  m_table->setFixedSize(cellSize * 9 + 4, cellSize * 9 + 4);
 
-  m_helperLabel = new QLabel(tr("Select an empty cell\nto see hints."), this);
+  m_helperLabel = new QLabel(this);
   m_helperLabel->setAlignment(Qt::AlignTop | Qt::AlignLeft);
   m_helperLabel->setWordWrap(true);
-  m_helperLabel->setStyleSheet("QLabel { font-size: 14pt; padding: 20px; background-color: #f5f5f5; border: 1px solid #ccc; border-radius: 5px; }");
+  m_helperLabel->setStyleSheet(
+      "QLabel { font-size: 14pt; padding: 20px; background-color: white; border: 2px solid #B2DFDB; border-radius: 8px; color: #263238; }");
   m_helperLabel->setFixedWidth(250);
 
   QWidget *centralWidget = new QWidget(this);
   QVBoxLayout *mainLayout = new QVBoxLayout(centralWidget);
+  mainLayout->setContentsMargins(15, 0, 15, 15);
 
   QHBoxLayout *gameLayout = new QHBoxLayout();
+  gameLayout->setSpacing(15);
   gameLayout->addWidget(m_table);
   gameLayout->addWidget(m_helperLabel);
 
@@ -90,9 +82,9 @@ void MainWindow::setupUI()
   setCentralWidget(centralWidget);
 
   connect(m_table, &QTableWidget::currentCellChanged, this, &MainWindow::onCurrentCellChanged);
-  connect(m_table, &QTableWidget::cellChanged, this, &MainWindow::onCellChanged);
-
   m_table->installEventFilter(this);
+
+  retranslateUI();
 }
 void MainWindow::clearBoard()
 {
@@ -102,6 +94,7 @@ void MainWindow::clearBoard()
 void MainWindow::setCellValue(int row, int col, int value, bool isFixed)
 {
   m_isUpdating = true;
+
   QTableWidgetItem *item = m_table->item(row, col);
   if (!item)
   {
@@ -110,7 +103,7 @@ void MainWindow::setCellValue(int row, int col, int value, bool isFixed)
   }
 
   bool isDarkQuadrant = ((row / 3) + (col / 3)) % 2 != 0;
-  QColor quadrantColor = isDarkQuadrant ? QColor("#f4f6f8") : QColor("#ffffff");
+  QColor quadrantColor = isDarkQuadrant ? QColor("#F4F9F9") : QColor("#FFFFFF");
 
   if (value == 0)
   {
@@ -127,20 +120,26 @@ void MainWindow::setCellValue(int row, int col, int value, bool isFixed)
     {
       QFont font = item->font();
       font.setBold(true);
-      font.setPointSize(14);
+      font.setPointSize(16);
       item->setFont(font);
-      item->setBackground(QColor("#e0e0e0"));
+      item->setBackground(QColor("#ECEFF1"));
+      item->setForeground(QBrush(QColor("#263238")));
       item->setFlags(item->flags() & ~Qt::ItemIsEditable);
     }
     else
     {
+
+      QFont font = item->font();
+      font.setBold(true);
+      font.setPointSize(18);
+      item->setFont(font);
       item->setBackground(quadrantColor);
-      item->setForeground(QBrush(Qt::blue));
+      item->setForeground(QBrush(QColor("#FF9800")));
     }
   }
+
   m_isUpdating = false;
 }
-
 void MainWindow::onCellChanged(int row, int col)
 {
   if (m_isUpdating)
@@ -205,6 +204,7 @@ void MainWindow::showVictoryMessage()
                            tr("Sudoku Completed"),
                            tr("Congratulations! You solved the Sudoku correctly.\nChoose a new level to continue playing."));
 }
+
 void MainWindow::setCellStuck(int row, int col, bool isStuck)
 {
   m_isUpdating = true;
@@ -214,12 +214,12 @@ void MainWindow::setCellStuck(int row, int col, bool isStuck)
   {
     if (isStuck)
     {
-      item->setBackground(QColor("#ffcdd2"));
+      item->setBackground(QColor("#FFCC80"));
     }
     else
     {
       bool isDarkQuadrant = ((row / 3) + (col / 3)) % 2 != 0;
-      QColor quadrantColor = isDarkQuadrant ? QColor("#f4f6f8") : QColor("#ffffff");
+      QColor quadrantColor = isDarkQuadrant ? QColor("#F4F9F9") : QColor("#FFFFFF");
       item->setBackground(quadrantColor);
     }
   }
@@ -229,7 +229,7 @@ void MainWindow::setCellStuck(int row, int col, bool isStuck)
 
 void MainWindow::showError(const QString &message)
 {
-  m_helperLabel->setText(QString("<span style='color: #d32f2f; font-weight: bold;'>⚠️ %1</span><br><br>%2")
+  m_helperLabel->setText(QString("<span style='color: #F57C00; font-weight: bold; font-size: 16pt;'>⚠️ %1</span><br><br><span style='color: #263238;'>%2</span>")
                              .arg(tr("Invalid Action"))
                              .arg(message));
 }
