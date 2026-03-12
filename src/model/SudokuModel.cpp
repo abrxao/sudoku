@@ -45,7 +45,6 @@ bool SudokuModel::loadRandomGrid(Difficulty difficulty)
 
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
   {
-    qWarning() << "Error trying to open assets file:" << filePath;
     return false;
   }
 
@@ -57,7 +56,6 @@ bool SudokuModel::loadRandomGrid(Difficulty difficulty)
 
   if (!ok || gridCount <= 0)
   {
-    qWarning() << "File error. Invalid grid count at:" << filePath;
     return false;
   }
 
@@ -69,7 +67,6 @@ bool SudokuModel::loadRandomGrid(Difficulty difficulty)
     gridLine = in.readLine();
     if (gridLine.isNull())
     {
-      qWarning() << "File ending before get sorted grid.";
       return false;
     }
   }

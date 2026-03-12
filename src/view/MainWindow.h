@@ -19,6 +19,7 @@ public:
   void showHelper(int row, int col, const QSet<int> &possibilities);
   void clearHelper();
   void showVictoryMessage();
+  void setCellStuck(int row, int col, bool isStuck);
 
 signals:
   void cellClicked(int row, int col);

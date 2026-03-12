@@ -25,7 +25,7 @@ private slots:
 private:
   SudokuModel *m_model;
   MainWindow *m_view;
-
+  void checkStuckCells();
   void syncViewWithModel();
 };
 

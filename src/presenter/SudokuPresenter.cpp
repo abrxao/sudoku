@@ -34,6 +34,7 @@ void SudokuPresenter::syncViewWithModel()
       m_view->setCellValue(row, col, val, val != 0);
     }
   }
+  checkStuckCells();
 }
 
 void SudokuPresenter::onCellUpdated(int row, int col, int value)
@@ -59,6 +60,8 @@ void SudokuPresenter::onCellInput(int row, int col, int value)
   m_model->setValue(row, col, value);
   onCellClicked(row, col);
 
+  checkStuckCells();
+
   bool won = m_model->isGameWon();
 
   if (won)
@@ -75,4 +78,20 @@ void SudokuPresenter::onNewGameRequested(int diffIndex)
   m_view->clearHelper();
 
   m_model->loadRandomGrid(selectedDiff);
+}
+
+void SudokuPresenter::checkStuckCells()
+{
+  for (int r = 0; r < 9; ++r)
+  {
+    for (int c = 0; c < 9; ++c)
+    {
+      if (m_model->getValue(r, c) == 0)
+      {
+
+        bool isStuck = m_model->getPossibilities(r, c).isEmpty();
+        m_view->setCellStuck(r, c, isStuck);
+      }
+    }
+  }
 }

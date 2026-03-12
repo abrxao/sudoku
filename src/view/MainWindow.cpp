@@ -180,3 +180,25 @@ void MainWindow::showVictoryMessage()
                            "Sudoku Completed",
                            "Congratulations! You solved the Sudoku correctly.\nChoose a new level to continue playing.");
 }
+
+void MainWindow::setCellStuck(int row, int col, bool isStuck)
+{
+  m_isUpdating = true;
+
+  QTableWidgetItem *item = m_table->item(row, col);
+  if (item)
+  {
+    if (isStuck)
+    {
+      item->setBackground(QColor("#ffcdd2"));
+    }
+    else
+    {
+      bool isDarkQuadrant = ((row / 3) + (col / 3)) % 2 != 0;
+      QColor quadrantColor = isDarkQuadrant ? QColor("#f4f6f8") : QColor("#ffffff");
+      item->setBackground(quadrantColor);
+    }
+  }
+
+  m_isUpdating = false;
+}
