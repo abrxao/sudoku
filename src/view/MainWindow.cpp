@@ -32,6 +32,12 @@ void MainWindow::setupUI()
   m_diffCombo->addItems({"Easy", "Medium", "Hard", "Insane"});
   m_diffCombo->setStyleSheet(comboStyle);
 
+  m_hintsCheckbox = new QCheckBox(this);
+  m_hintsCheckbox->setChecked(true);
+  m_hintsCheckbox->setStyleSheet("font-size: 13pt; color: #00796B; font-weight: bold; spacing: 8px; margin-left: 15px;");
+
+  connect(m_hintsCheckbox, &QCheckBox::toggled, this, &MainWindow::hintsToggled);
+
   m_newGameBtn = new QPushButton(this);
   m_newGameBtn->setStyleSheet(
       "QPushButton { font-size: 14pt; padding: 8px 16px; background-color: #FF9800; color: white; font-weight: bold; border-radius: 6px; border: none; }"
@@ -39,6 +45,7 @@ void MainWindow::setupUI()
       "QPushButton:pressed { background-color: #E65100; }");
 
   topLayout->addWidget(m_langCombo);
+  topLayout->addWidget(m_hintsCheckbox);
   topLayout->addStretch();
   topLayout->addWidget(m_levelLabel);
   topLayout->addWidget(m_diffCombo);
@@ -326,6 +333,8 @@ void MainWindow::retranslateUI()
   m_diffCombo->setToolTip(tr("Select the difficulty level"));
   m_langCombo->setToolTip(tr("Change the application language"));
   m_table->setToolTip(tr("Use arrow keys to navigate, numbers 1-9 to input, and Backspace to clear"));
+  m_hintsCheckbox->setText(tr("Show Hints"));
+  m_hintsCheckbox->setToolTip(tr("Toggle the visibility of candidate numbers inside empty cells"));
 }
 
 void MainWindow::setCellPossibilities(int row, int col, const QSet<int> &possibilities)

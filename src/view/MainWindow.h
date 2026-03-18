@@ -11,6 +11,7 @@
 #include <QKeyEvent>
 #include <QTranslator>
 #include <QCoreApplication>
+#include <QCheckBox>
 
 class MainWindow : public QMainWindow
 {
@@ -33,6 +34,7 @@ signals:
   void cellSelected(int row, int col);
   void cellInput(int row, int col, int value);
   void newGameRequested(int difficultyIndex);
+  void hintsToggled(bool enabled);
 
 private slots:
   void onCellChanged(int row, int col);
@@ -46,6 +48,7 @@ private:
   QComboBox *m_langCombo;
   QLabel *m_levelLabel;
   QTranslator m_translator;
+  QCheckBox *m_hintsCheckbox;
   bool m_isUpdating;
   void setupUI();
 };

@@ -4,30 +4,30 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../view/MainWindow.cpp" line="12"/>
-        <location filename="../view/MainWindow.cpp" line="289"/>
+        <location filename="../view/MainWindow.cpp" line="13"/>
+        <location filename="../view/MainWindow.cpp" line="321"/>
         <source>Sudoku Assistant - Pro Version</source>
         <translation>Assistant Sudoku - Version Pro</translation>
     </message>
     <message>
-        <location filename="../view/MainWindow.cpp" line="291"/>
+        <location filename="../view/MainWindow.cpp" line="323"/>
         <source>New Game</source>
         <translation>Nouvelle partie</translation>
     </message>
     <message>
-        <location filename="../view/MainWindow.cpp" line="290"/>
+        <location filename="../view/MainWindow.cpp" line="322"/>
         <source>Level:</source>
         <translation>Niveau :</translation>
     </message>
     <message>
-        <location filename="../view/MainWindow.cpp" line="198"/>
+        <location filename="../view/MainWindow.cpp" line="230"/>
         <source>Select an empty cell
 to see hints.</source>
         <translation>Sélectionnez une case vide
 pour voir les indices.</translation>
     </message>
     <message>
-        <location filename="../view/MainWindow.cpp" line="175"/>
+        <location filename="../view/MainWindow.cpp" line="207"/>
         <source>Cell (%1, %2)
 
 No valid possibilities or already filled.</source>
@@ -36,7 +36,7 @@ No valid possibilities or already filled.</source>
 Aucune possibilité valide ou déjà remplie.</translation>
     </message>
     <message>
-        <location filename="../view/MainWindow.cpp" line="182"/>
+        <location filename="../view/MainWindow.cpp" line="214"/>
         <source>Cell (%1, %2)
 
 Possibilities:
@@ -47,7 +47,7 @@ Possibilités :
 </translation>
     </message>
     <message>
-        <location filename="../view/MainWindow.cpp" line="190"/>
+        <location filename="../view/MainWindow.cpp" line="222"/>
         <source>
 
 ⭐ Only one option!</source>
@@ -56,60 +56,70 @@ Possibilités :
 ⭐ Une seule option !</translation>
     </message>
     <message>
-        <location filename="../view/MainWindow.cpp" line="204"/>
+        <location filename="../view/MainWindow.cpp" line="236"/>
         <source>Sudoku Completed</source>
         <translation>Sudoku terminé</translation>
     </message>
     <message>
-        <location filename="../view/MainWindow.cpp" line="205"/>
+        <location filename="../view/MainWindow.cpp" line="237"/>
         <source>Congratulations! You solved the Sudoku correctly.
 Choose a new level to continue playing.</source>
         <translation>Félicitations ! Vous avez résolu le Sudoku correctement.
 Choisissez un nouveau niveau pour continuer à jouer.</translation>
     </message>
     <message>
-        <location filename="../view/MainWindow.cpp" line="233"/>
+        <location filename="../view/MainWindow.cpp" line="265"/>
         <source>Invalid Action</source>
         <translation>Action invalide</translation>
     </message>
     <message>
-        <location filename="../view/MainWindow.cpp" line="293"/>
+        <location filename="../view/MainWindow.cpp" line="325"/>
         <source>Easy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../view/MainWindow.cpp" line="294"/>
+        <location filename="../view/MainWindow.cpp" line="326"/>
         <source>Medium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../view/MainWindow.cpp" line="295"/>
+        <location filename="../view/MainWindow.cpp" line="327"/>
         <source>Hard</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../view/MainWindow.cpp" line="296"/>
+        <location filename="../view/MainWindow.cpp" line="328"/>
         <source>Insane</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../view/MainWindow.cpp" line="300"/>
+        <location filename="../view/MainWindow.cpp" line="332"/>
         <source>Start a new game with the selected difficulty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../view/MainWindow.cpp" line="301"/>
+        <location filename="../view/MainWindow.cpp" line="333"/>
         <source>Select the difficulty level</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../view/MainWindow.cpp" line="302"/>
+        <location filename="../view/MainWindow.cpp" line="334"/>
         <source>Change the application language</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../view/MainWindow.cpp" line="303"/>
+        <location filename="../view/MainWindow.cpp" line="335"/>
         <source>Use arrow keys to navigate, numbers 1-9 to input, and Backspace to clear</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../view/MainWindow.cpp" line="336"/>
+        <source>Show Hints</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../view/MainWindow.cpp" line="337"/>
+        <source>Toggle the visibility of candidate numbers inside empty cells</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

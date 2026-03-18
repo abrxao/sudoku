@@ -21,10 +21,12 @@ private slots:
   void onCellSelected(int row, int col);
   void onCellInput(int row, int col, int value);
   void onNewGameRequested(int diffIndex);
+  void onHintsToggled(bool enabled);
 
 private:
   SudokuModel *m_model;
   MainWindow *m_view;
+  bool m_showHints = true;
   void updateGridState();
   void syncViewWithModel();
 };

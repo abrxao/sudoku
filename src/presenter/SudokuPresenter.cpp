@@ -9,6 +9,7 @@ SudokuPresenter::SudokuPresenter(SudokuModel *model, MainWindow *view, QObject *
   connect(m_view, &MainWindow::cellSelected, this, &SudokuPresenter::onCellSelected);
   connect(m_view, &MainWindow::cellInput, this, &SudokuPresenter::onCellInput);
   connect(m_view, &MainWindow::newGameRequested, this, &SudokuPresenter::onNewGameRequested);
+  connect(m_view, &MainWindow::hintsToggled, this, &SudokuPresenter::onHintsToggled);
 }
 
 void SudokuPresenter::startGame(Difficulty diff)
@@ -97,18 +98,29 @@ void SudokuPresenter::updateGridState()
     {
       if (m_model->getValue(r, c) == 0)
       {
-
         QSet<int> poss = m_model->getPossibilities(r, c);
 
-        m_view->setCellPossibilities(r, c, poss);
+        if (m_showHints)
+        {
+          m_view->setCellPossibilities(r, c, poss);
+        }
+        else
+        {
+          m_view->setCellPossibilities(r, c, QSet<int>());
+        }
 
         m_view->setCellStuck(r, c, poss.isEmpty());
       }
       else
       {
-
         m_view->setCellPossibilities(r, c, QSet<int>());
       }
     }
   }
+}
+
+void SudokuPresenter::onHintsToggled(bool enabled)
+{
+  m_showHints = enabled;
+  updateGridState();
 }
