@@ -25,31 +25,15 @@ void MainWindow::setupUI()
                        "QComboBox::drop-down { border: none; }";
   m_langCombo->setStyleSheet(comboStyle);
 
-  m_levelLabel = new QLabel(this);
-  m_levelLabel->setStyleSheet("font-size: 14pt; color: #00796B; font-weight: bold;");
-
-  m_diffCombo = new QComboBox(this);
-  m_diffCombo->addItems({"Easy", "Medium", "Hard", "Insane"});
-  m_diffCombo->setStyleSheet(comboStyle);
-
   m_hintsCheckbox = new QCheckBox(this);
   m_hintsCheckbox->setChecked(true);
   m_hintsCheckbox->setStyleSheet("font-size: 13pt; color: #00796B; font-weight: bold; spacing: 8px; margin-left: 15px;");
 
   connect(m_hintsCheckbox, &QCheckBox::toggled, this, &MainWindow::hintsToggled);
 
-  m_newGameBtn = new QPushButton(this);
-  m_newGameBtn->setStyleSheet(
-      "QPushButton { font-size: 14pt; padding: 8px 16px; background-color: #FF9800; color: white; font-weight: bold; border-radius: 6px; border: none; }"
-      "QPushButton:hover { background-color: #F57C00; }"
-      "QPushButton:pressed { background-color: #E65100; }");
-
   topLayout->addWidget(m_langCombo);
   topLayout->addWidget(m_hintsCheckbox);
   topLayout->addStretch();
-  topLayout->addWidget(m_levelLabel);
-  topLayout->addWidget(m_diffCombo);
-  topLayout->addWidget(m_newGameBtn);
 
   m_table = new QTableWidget(9, 9, this);
   m_table->horizontalHeader()->setVisible(false);
@@ -60,6 +44,33 @@ void MainWindow::setupUI()
   m_table->setStyleSheet(
       "QTableWidget { gridline-color: #80CBC4; font-size: 18pt; background-color: white; border: 2px solid #00796B; border-radius: 8px; }"
       "QTableWidget::item:selected { background-color: #E0F2F1; color: #00796B; border: 2px solid #009688; }");
+
+  QMenuBar *menuBar = this->menuBar();
+  menuBar->setStyleSheet("QMenuBar { background-color: #F4F6F8; color: #263238; font-size: 12pt; }"
+                         "QMenuBar::item:selected { background-color: #E0F2F1; }");
+
+  m_menuFile = menuBar->addMenu("");
+  m_menuNewGame = m_menuFile->addMenu("");
+  m_actionEasy = m_menuNewGame->addAction("");
+  m_actionMedium = m_menuNewGame->addAction("");
+  m_actionHard = m_menuNewGame->addAction("");
+  m_actionInsane = m_menuNewGame->addAction("");
+
+  m_menuFile->addSeparator();
+  m_actionSave = m_menuFile->addAction("");
+  m_actionLoad = m_menuFile->addAction("");
+
+  connect(m_actionEasy, &QAction::triggered, this, [this]()
+          { emit newGameRequested(0); });
+  connect(m_actionMedium, &QAction::triggered, this, [this]()
+          { emit newGameRequested(1); });
+  connect(m_actionHard, &QAction::triggered, this, [this]()
+          { emit newGameRequested(2); });
+  connect(m_actionInsane, &QAction::triggered, this, [this]()
+          { emit newGameRequested(3); });
+
+  connect(m_actionSave, &QAction::triggered, this, &MainWindow::saveGameRequested);
+  connect(m_actionLoad, &QAction::triggered, this, &MainWindow::loadGameRequested);
 
   int cellSize = 52;
   for (int i = 0; i < 9; ++i)
@@ -93,9 +104,6 @@ void MainWindow::setupUI()
   connect(m_table, &QTableWidget::currentCellChanged, this, &MainWindow::onCurrentCellChanged);
   m_table->installEventFilter(this);
   m_table->setItemDelegate(new SudokuCellDelegate(m_table));
-
-  connect(m_newGameBtn, &QPushButton::clicked, this, [this]()
-          { emit newGameRequested(m_diffCombo->currentIndex()); });
 
   connect(m_langCombo, &QComboBox::currentIndexChanged, this, [this](int index)
           {
@@ -317,24 +325,26 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 
 void MainWindow::retranslateUI()
 {
-
   this->setWindowTitle(tr("Sudoku Assistant - Pro Version"));
-  m_levelLabel->setText(tr("Level:"));
-  m_newGameBtn->setText(tr("New Game"));
 
-  m_diffCombo->setItemText(0, tr("Easy"));
-  m_diffCombo->setItemText(1, tr("Medium"));
-  m_diffCombo->setItemText(2, tr("Hard"));
-  m_diffCombo->setItemText(3, tr("Insane"));
+  // Menus
+  m_menuFile->setTitle(tr("File"));
+  m_menuNewGame->setTitle(tr("New Game"));
+  m_actionEasy->setText(tr("Easy"));
+  m_actionMedium->setText(tr("Medium"));
+  m_actionHard->setText(tr("Hard"));
+  m_actionInsane->setText(tr("Insane"));
+  m_actionSave->setText(tr("Save Game"));
+  m_actionLoad->setText(tr("Load Game"));
 
-  clearHelper();
-
-  m_newGameBtn->setToolTip(tr("Start a new game with the selected difficulty"));
-  m_diffCombo->setToolTip(tr("Select the difficulty level"));
-  m_langCombo->setToolTip(tr("Change the application language"));
-  m_table->setToolTip(tr("Use arrow keys to navigate, numbers 1-9 to input, and Backspace to clear"));
+  // Checkbox
   m_hintsCheckbox->setText(tr("Show Hints"));
   m_hintsCheckbox->setToolTip(tr("Toggle the visibility of candidate numbers inside empty cells"));
+
+  m_langCombo->setToolTip(tr("Change the application language"));
+  m_table->setToolTip(tr("Use arrow keys to navigate, numbers 1-9 to input, and Backspace to clear"));
+
+  clearHelper();
 }
 
 void MainWindow::setCellPossibilities(int row, int col, const QSet<int> &possibilities)

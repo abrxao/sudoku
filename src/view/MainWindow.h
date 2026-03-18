@@ -12,6 +12,9 @@
 #include <QTranslator>
 #include <QCoreApplication>
 #include <QCheckBox>
+#include <QMenuBar>
+#include <QMenu>
+#include <QAction>
 
 class MainWindow : public QMainWindow
 {
@@ -35,6 +38,8 @@ signals:
   void cellInput(int row, int col, int value);
   void newGameRequested(int difficultyIndex);
   void hintsToggled(bool enabled);
+  void saveGameRequested();
+  void loadGameRequested();
 
 private slots:
   void onCellChanged(int row, int col);
@@ -43,12 +48,17 @@ private slots:
 private:
   QTableWidget *m_table;
   QLabel *m_helperLabel;
-  QComboBox *m_diffCombo;
-  QPushButton *m_newGameBtn;
   QComboBox *m_langCombo;
-  QLabel *m_levelLabel;
   QTranslator m_translator;
   QCheckBox *m_hintsCheckbox;
+  QMenu *m_menuFile;
+  QMenu *m_menuNewGame;
+  QAction *m_actionEasy;
+  QAction *m_actionMedium;
+  QAction *m_actionHard;
+  QAction *m_actionInsane;
+  QAction *m_actionSave;
+  QAction *m_actionLoad;
   bool m_isUpdating;
   void setupUI();
 };
