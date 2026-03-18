@@ -32,7 +32,9 @@ void SudokuPresenter::syncViewWithModel()
     {
       int val = m_model->getValue(row, col);
 
-      m_view->setCellValue(row, col, val, val != 0);
+      bool isFixed = m_model->isFixed(row, col);
+
+      m_view->setCellValue(row, col, val, isFixed);
     }
   }
   updateGridState();

@@ -11,8 +11,13 @@ SudokuModel::SudokuModel(QObject *parent) : QObject(parent)
 void SudokuModel::clearGrid()
 {
   for (int i = 0; i < 9; ++i)
+  {
     for (int j = 0; j < 9; ++j)
+    {
       m_grid[i][j] = 0;
+      m_originalGrid[i][j] = 0;
+    }
+  }
 }
 
 int SudokuModel::getValue(int row, int col) const
@@ -92,7 +97,9 @@ bool SudokuModel::loadFromString(const QString &gridData)
         clearGrid();
         return false;
       }
-      m_grid[row][col] = c.digitValue();
+      int val = c.digitValue();
+      m_grid[row][col] = val;
+      m_originalGrid[row][col] = val;
     }
   }
   emit gridLoaded();
@@ -211,5 +218,73 @@ bool SudokuModel::isValidMove(int row, int col, int value) const
     }
   }
 
+  return true;
+}
+
+bool SudokuModel::isFixed(int row, int col) const
+{
+  if (row < 0 || row >= 9 || col < 0 || col >= 9)
+    return false;
+  return m_originalGrid[row][col] != 0;
+}
+
+bool SudokuModel::saveToFile(const QString &filePath) const
+{
+  QFile file(filePath);
+  if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+  {
+    return false;
+  }
+
+  QTextStream out(&file);
+  for (int r = 0; r < 9; ++r)
+  {
+    for (int c = 0; c < 9; ++c)
+    {
+      out << m_originalGrid[r][c];
+    }
+  }
+  out << "\n";
+
+  for (int r = 0; r < 9; ++r)
+  {
+    for (int c = 0; c < 9; ++c)
+    {
+      out << m_grid[r][c];
+    }
+  }
+
+  return true;
+}
+
+bool SudokuModel::loadFromFile(const QString &filePath)
+{
+  QFile file(filePath);
+  if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+  {
+    return false;
+  }
+
+  QTextStream in(&file);
+  QString origData = in.readLine().trimmed();
+  QString currentData = in.readLine().trimmed();
+
+  if (origData.length() != 81 || currentData.length() != 81)
+  {
+    return false;
+  }
+
+  int idx = 0;
+  for (int r = 0; r < 9; ++r)
+  {
+    for (int c = 0; c < 9; ++c)
+    {
+      m_originalGrid[r][c] = origData[idx].digitValue();
+      m_grid[r][c] = currentData[idx].digitValue();
+      idx++;
+    }
+  }
+
+  emit gridLoaded();
   return true;
 }

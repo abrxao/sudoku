@@ -26,6 +26,9 @@ public:
   QSet<int> getPossibilities(int row, int col) const;
   bool isGameWon() const;
   bool isValidMove(int row, int col, int value) const;
+  bool saveToFile(const QString &filePath) const;
+  bool loadFromFile(const QString &filePath);
+  bool isFixed(int row, int col) const;
 
 signals:
 
@@ -34,6 +37,7 @@ signals:
 
 private:
   int m_grid[9][9];
+  int m_originalGrid[9][9];
   void clearGrid();
   QString getFilePathForDifficulty(Difficulty diff) const;
 };
