@@ -46,6 +46,7 @@ signals:
 private slots:
   void onCellChanged(int row, int col);
   void onCurrentCellChanged(int currentRow, int currentColumn, int previousRow, int previousColumn);
+  void showAboutDialog();
 
 private:
   QTableWidget *m_table;
@@ -61,6 +62,8 @@ private:
   QAction *m_actionInsane;
   QAction *m_actionSave;
   QAction *m_actionLoad;
+  QMenu *m_menuHelp;
+  QAction *m_actionAbout;
 
   bool m_isUpdating;
   void setupUI();

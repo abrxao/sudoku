@@ -64,6 +64,10 @@ void MainWindow::setupUI()
   m_actionSave = m_menuFile->addAction("");
   m_actionLoad = m_menuFile->addAction("");
 
+  m_menuHelp = menuBar->addMenu("");
+  m_actionAbout = m_menuHelp->addAction("");
+
+  connect(m_actionAbout, &QAction::triggered, this, &MainWindow::showAboutDialog);
   connect(m_actionEasy, &QAction::triggered, this, [this]()
           { emit newGameRequested(0); });
   connect(m_actionMedium, &QAction::triggered, this, [this]()
@@ -349,6 +353,8 @@ void MainWindow::retranslateUI()
   m_langCombo->setToolTip(tr("Change the application language"));
   m_table->setToolTip(tr("Use arrow keys to navigate, numbers 1-9 to input, and Backspace to clear"));
 
+  m_menuHelp->setTitle(tr("Help"));
+  m_actionAbout->setText(tr("About"));
   clearHelper();
 }
 
@@ -390,4 +396,13 @@ QString MainWindow::promptLoadFilePath()
       tr("Load Game"),
       "",
       tr("Sudoku Files (*.sudoku);;All Files (*)"));
+}
+
+void MainWindow::showAboutDialog()
+{
+  QMessageBox::about(this,
+                     tr("About"),
+                     tr("<h2>Sudoku Assistant - Pro Version</h2>"
+                        "<p>Projet développé pour le module d'Interfaces Graphiques (Qt) à l'<b>ENSICAEN</b>.</p>"
+                        "<p><b>Auteur :</b> Abraão de Carvalho Albuquerque</p>"));
 }
