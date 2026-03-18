@@ -35,6 +35,9 @@ void MainWindow::setupUI()
   topLayout->addWidget(m_langCombo);
   topLayout->addWidget(m_hintsCheckbox);
   topLayout->addStretch();
+  topLayout->addWidget(m_hintsCheckbox);
+  topLayout->addSpacing(20);
+  topLayout->addWidget(m_langCombo);
 
   m_table = new QTableWidget(9, 9, this);
   m_table->horizontalHeader()->setVisible(false);
@@ -90,7 +93,8 @@ void MainWindow::setupUI()
 
   QWidget *centralWidget = new QWidget(this);
   QVBoxLayout *mainLayout = new QVBoxLayout(centralWidget);
-  mainLayout->setContentsMargins(15, 0, 15, 15);
+  mainLayout->setContentsMargins(20, 20, 20, 20);
+  mainLayout->setSpacing(15);
 
   QHBoxLayout *gameLayout = new QHBoxLayout();
   gameLayout->setSpacing(15);
