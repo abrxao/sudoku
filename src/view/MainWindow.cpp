@@ -12,7 +12,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), m_isUpdating(fals
 void MainWindow::setupUI()
 {
   this->setWindowTitle(tr("Sudoku Assistant - Pro Version"));
-  this->setFixedSize(760, 560);
+
+  this->setMinimumSize(600, 600);
 
   this->setStyleSheet("QMainWindow { background-color: #F4F6F8; }");
 
@@ -32,8 +33,6 @@ void MainWindow::setupUI()
 
   connect(m_hintsCheckbox, &QCheckBox::toggled, this, &MainWindow::hintsToggled);
 
-  topLayout->addWidget(m_langCombo);
-  topLayout->addWidget(m_hintsCheckbox);
   topLayout->addStretch();
   topLayout->addWidget(m_hintsCheckbox);
   topLayout->addSpacing(20);
@@ -86,27 +85,37 @@ void MainWindow::setupUI()
     m_table->setColumnWidth(i, cellSize);
     m_table->setRowHeight(i, cellSize);
   }
+
   m_table->setFixedSize(cellSize * 9 + 4, cellSize * 9 + 4);
+  m_table->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
   m_helperLabel = new QLabel(this);
-  m_helperLabel->setAlignment(Qt::AlignTop | Qt::AlignLeft);
+  m_helperLabel->setAlignment(Qt::AlignCenter);
   m_helperLabel->setWordWrap(true);
   m_helperLabel->setStyleSheet(
-      "QLabel { font-size: 14pt; padding: 20px; background-color: white; border: 2px solid #B2DFDB; border-radius: 8px; color: #263238; }");
-  m_helperLabel->setFixedWidth(250);
+      "QLabel { font-size: 14pt; padding: 10px; background-color: #FFFFFF; "
+      "border: 2px solid #FF9800; border-radius: 8px; color: #263238; }");
+
+  m_helperLabel->setFixedWidth(m_table->width());
+  m_helperLabel->setMinimumHeight(60);
+  m_helperLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Minimum);
+
+  m_helperLabel->setVisible(false);
 
   QWidget *centralWidget = new QWidget(this);
   QVBoxLayout *mainLayout = new QVBoxLayout(centralWidget);
   mainLayout->setContentsMargins(20, 20, 20, 20);
   mainLayout->setSpacing(15);
 
-  QHBoxLayout *gameLayout = new QHBoxLayout();
+  QVBoxLayout *gameLayout = new QVBoxLayout();
+  gameLayout->setAlignment(Qt::AlignHCenter);
   gameLayout->setSpacing(15);
   gameLayout->addWidget(m_table);
   gameLayout->addWidget(m_helperLabel);
 
   mainLayout->addWidget(topBar);
   mainLayout->addLayout(gameLayout);
+  mainLayout->addStretch();
 
   setCentralWidget(centralWidget);
 
@@ -135,6 +144,7 @@ void MainWindow::setupUI()
 
   retranslateUI();
 }
+
 void MainWindow::clearBoard()
 {
   m_table->clearContents();
@@ -189,6 +199,7 @@ void MainWindow::setCellValue(int row, int col, int value, bool isFixed)
 
   m_isUpdating = false;
 }
+
 void MainWindow::onCellChanged(int row, int col)
 {
   if (m_isUpdating)
@@ -219,32 +230,15 @@ void MainWindow::onCellChanged(int row, int col)
 
 void MainWindow::showHelper(int row, int col, const QSet<int> &possibilities)
 {
-  if (possibilities.isEmpty())
-  {
-    m_helperLabel->setText(tr("Cell (%1, %2)\n\nNo valid possibilities or already filled.").arg(row + 1).arg(col + 1));
-    return;
-  }
-
-  QList<int> list(possibilities.begin(), possibilities.end());
-  std::sort(list.begin(), list.end());
-
-  QString helperText = tr("Cell (%1, %2)\n\nPossibilities:\n").arg(row + 1).arg(col + 1);
-  for (int p : list)
-  {
-    helperText += QString::number(p) + "  ";
-  }
-
-  if (list.size() == 1)
-  {
-    helperText += tr("\n\n⭐ Only one option!");
-  }
-
-  m_helperLabel->setText(helperText);
+  Q_UNUSED(row);
+  Q_UNUSED(col);
+  Q_UNUSED(possibilities);
 }
 
 void MainWindow::clearHelper()
 {
-  m_helperLabel->setText(tr("Select an empty cell\nto see hints."));
+  m_helperLabel->clear();
+  m_helperLabel->setVisible(false);
 }
 
 void MainWindow::showVictoryMessage()
@@ -278,11 +272,11 @@ void MainWindow::setCellStuck(int row, int col, bool isStuck)
 
 void MainWindow::showError(const QString &message)
 {
-  m_helperLabel->setText(QString("<span style='color: #F57C00; font-weight: bold; font-size: 16pt;'>⚠️ %1</span><br><br><span style='color: #263238;'>%2</span>")
+  m_helperLabel->setText(QString("<span style='color: #E65100; font-weight: bold;'>⚠️ %1</span><br>%2")
                              .arg(tr("Invalid Action"))
                              .arg(message));
+  m_helperLabel->setVisible(true);
 }
-
 void MainWindow::onCurrentCellChanged(int currentRow, int currentColumn, int previousRow, int previousColumn)
 {
   if (currentRow >= 0 && currentColumn >= 0)
