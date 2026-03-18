@@ -17,6 +17,7 @@ set(SOURCES
     src/model/SudokuModel.cpp
     src/view/MainWindow.cpp
     src/presenter/SudokuPresenter.cpp
+    src/view/SudokuCellDelegate.cpp
 )
 
 set(TS_FILES src/translations/sudoku_fr.ts)

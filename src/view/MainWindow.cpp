@@ -48,6 +48,7 @@ void MainWindow::setupUI()
   m_table->horizontalHeader()->setVisible(false);
   m_table->verticalHeader()->setVisible(false);
   m_table->setSelectionMode(QAbstractItemView::SingleSelection);
+  m_table->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
   m_table->setStyleSheet(
       "QTableWidget { gridline-color: #80CBC4; font-size: 18pt; background-color: white; border: 2px solid #00796B; border-radius: 8px; }"
@@ -85,6 +86,29 @@ void MainWindow::setupUI()
   connect(m_table, &QTableWidget::currentCellChanged, this, &MainWindow::onCurrentCellChanged);
   m_table->installEventFilter(this);
   m_table->setItemDelegate(new SudokuCellDelegate(m_table));
+
+  connect(m_newGameBtn, &QPushButton::clicked, this, [this]()
+          { emit newGameRequested(m_diffCombo->currentIndex()); });
+
+  connect(m_langCombo, &QComboBox::currentIndexChanged, this, [this](int index)
+          {
+            if (index == 1)
+            { 
+              if (m_translator.load(":/i18n/sudoku_fr.qm"))
+              {
+                qApp->installTranslator(&m_translator);
+              }
+              else
+              {
+                qDebug() << "[I18N ERROR] Falha ao carregar sudoku_fr.qm.";
+              }
+            }
+            else
+            { 
+              qApp->removeTranslator(&m_translator);
+            }
+            retranslateUI(); });
+
   retranslateUI();
 }
 void MainWindow::clearBoard()
