@@ -2,6 +2,7 @@
 #include "SudokuCellDelegate.h"
 #include <QHeaderView>
 #include <QVBoxLayout>
+#include <QFileDialog>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), m_isUpdating(false)
 {
@@ -360,4 +361,29 @@ void MainWindow::setCellPossibilities(int row, int col, const QSet<int> &possibi
     }
     item->setData(Qt::UserRole, mask);
   }
+}
+
+QString MainWindow::promptSaveFilePath()
+{
+  QString path = QFileDialog::getSaveFileName(
+      this,
+      tr("Save Game"),
+      "",
+      tr("Sudoku Files (*.sudoku);;All Files (*)"));
+
+  if (!path.isEmpty() && !path.endsWith(".sudoku", Qt::CaseInsensitive))
+  {
+    path += ".sudoku";
+  }
+
+  return path;
+}
+
+QString MainWindow::promptLoadFilePath()
+{
+  return QFileDialog::getOpenFileName(
+      this,
+      tr("Load Game"),
+      "",
+      tr("Sudoku Files (*.sudoku);;All Files (*)"));
 }

@@ -32,6 +32,8 @@ public:
   bool eventFilter(QObject *obj, QEvent *event) override;
   void retranslateUI();
   void setCellPossibilities(int row, int col, const QSet<int> &possibilities);
+  QString promptSaveFilePath();
+  QString promptLoadFilePath();
 
 signals:
   void cellSelected(int row, int col);
@@ -59,6 +61,7 @@ private:
   QAction *m_actionInsane;
   QAction *m_actionSave;
   QAction *m_actionLoad;
+
   bool m_isUpdating;
   void setupUI();
 };

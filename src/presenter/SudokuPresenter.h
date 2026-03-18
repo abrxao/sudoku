@@ -22,6 +22,8 @@ private slots:
   void onCellInput(int row, int col, int value);
   void onNewGameRequested(int diffIndex);
   void onHintsToggled(bool enabled);
+  void onSaveGameRequested();
+  void onLoadGameRequested();
 
 private:
   SudokuModel *m_model;

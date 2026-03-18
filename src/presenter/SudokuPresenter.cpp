@@ -10,6 +10,8 @@ SudokuPresenter::SudokuPresenter(SudokuModel *model, MainWindow *view, QObject *
   connect(m_view, &MainWindow::cellInput, this, &SudokuPresenter::onCellInput);
   connect(m_view, &MainWindow::newGameRequested, this, &SudokuPresenter::onNewGameRequested);
   connect(m_view, &MainWindow::hintsToggled, this, &SudokuPresenter::onHintsToggled);
+  connect(m_view, &MainWindow::saveGameRequested, this, &SudokuPresenter::onSaveGameRequested);
+  connect(m_view, &MainWindow::loadGameRequested, this, &SudokuPresenter::onLoadGameRequested);
 }
 
 void SudokuPresenter::startGame(Difficulty diff)
@@ -125,4 +127,30 @@ void SudokuPresenter::onHintsToggled(bool enabled)
 {
   m_showHints = enabled;
   updateGridState();
+}
+
+void SudokuPresenter::onSaveGameRequested()
+{
+  QString path = m_view->promptSaveFilePath();
+
+  if (!path.isEmpty())
+  {
+    if (!m_model->saveToFile(path))
+    {
+      m_view->showError(tr("Failed to save the game. Check file permissions."));
+    }
+  }
+}
+
+void SudokuPresenter::onLoadGameRequested()
+{
+  QString path = m_view->promptLoadFilePath();
+
+  if (!path.isEmpty())
+  {
+    if (!m_model->loadFromFile(path))
+    {
+      m_view->showError(tr("Failed to load the game. The file might be corrupted."));
+    }
+  }
 }
