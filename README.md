@@ -8,7 +8,7 @@
 
 Sudoku Assistant Pro is a **Model-View-Presenter (MVP)** architecture, completely decoupling the mathematical state engine from the `Qt` rendering layer. The application prioritizes memory efficiency, instantaneous visual feedback, and bulletproof user input handling over naive brute-force UI implementations.
 
-## Technical Features & Innovations
+## Technical Features
 
 **Zero-Overhead Candidate Rendering:** Rejects the standard, memory-heavy approach of nesting 729 hidden `QLabel` widgets. Instead, it utilizes a custom `QStyledItemDelegate` and bitmasking to paint candidate numbers directly inside empty cells with $O(1)$ data transfer efficiency.
 
@@ -22,6 +22,71 @@ Sudoku Assistant Pro is a **Model-View-Presenter (MVP)** architecture, completel
 ## Software Architecture: The MVP & Observer Paradigm
 
 The most critical decision in this project was the strict adherence to the **Model-View-Presenter (MVP)** architecture, augmented by the **Observer Pattern**. This ensures total separation of concerns: the business logic never touches the GUI, and the GUI never calculates game rules.
+
+```mermaid
+classDiagram
+  direction TB
+
+  class SudokuModel {
+    -int m_grid[9][9]
+    -int m_originalGrid[9][9]
+    +loadFromString(data: QString) bool
+    +clearGrid()
+    +getValue(row: int, col: int) int
+    +getPossibilities(row: int, col: int) QSet~int~
+    +isFixed(row: int, col: int) bool
+    +saveToFile(path: QString) bool
+    +loadFromFile(path: QString) bool
+    +gridLoaded() [Signal]
+    +cellUpdated(row: int, col: int) [Signal]
+  }
+
+  class MainWindow {
+    -QTableWidget* m_table
+    -QLabel* m_helperLabel
+    -QMenuBar* menuBar
+    +setCellValue(row, col, val, isFixed)
+    +setCellPossibilities(row, col, poss)
+    +showError(msg: QString)
+    +clearHelper()
+    +promptSaveFilePath() QString
+    +promptLoadFilePath() QString
+    +newGameRequested(level: int) [Signal]
+    +saveGameRequested() [Signal]
+    +loadGameRequested() [Signal]
+    +hintsToggled(enabled: bool) [Signal]
+  }
+
+  class SudokuCellDelegate {
+    +paint(painter: QPainter*, option, index)
+  }
+
+  class SudokuPresenter {
+    -SudokuModel* m_model
+    -MainWindow* m_view
+    -bool m_showHints
+    +syncViewWithModel()
+    +updateGridState()
+    -onNewGameRequested(level: int) [Slot]
+    -onSaveGameRequested() [Slot]
+    -onLoadGameRequested() [Slot]
+    -onHintsToggled(enabled: bool) [Slot]
+  }
+
+  %% Core Relationships
+  SudokuPresenter --> SudokuModel : Updates state
+  SudokuPresenter --> MainWindow : Updates UI
+  MainWindow --> SudokuCellDelegate : Delegates rendering
+
+  %% Observer Pattern (Indirect communication)
+  SudokuModel ..> SudokuPresenter : Notifies
+  MainWindow ..> SudokuPresenter : Emits interactions
+
+  %% Explanatory Notes
+  note for SudokuPresenter "The Brain (Orchestrator).<br>Intercepts View signals,<br>applies logic, updates Model.<br>Reads Model, injects to View."
+  note for SudokuModel "The Engine (Isolated).<br>Unaware of Qt GUI.<br>Handles pure math and state."
+  note for MainWindow "The Shell (Dumb).<br>Unaware of game rules.<br>Draws UI & captures input."
+```
 
 ### 1. The Model (`SudokuModel`)
 
